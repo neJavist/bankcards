@@ -1,0 +1,31 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet id="1753466317672-1" author="nejavist">
+        <createTable tableName="card_transfer" schemaName="bankcards">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_card_transfer_user"
+                         references="bankcards.users(id)"/>
+            </column>
+            <column name="card_number_to" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_number_from" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="NUMERIC">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transfer_time" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

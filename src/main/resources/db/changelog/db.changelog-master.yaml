@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/release-0.1.0.0/init-user-table.xml
+  - include:
+      file: db/changelog/release-0.1.0.0/init-role-table.xml
+  - include:
+      file: db/changelog/release-0.1.0.0/init-card-table.xml
+  - include:
+      file: db/changelog/release-0.1.0.0/init-card_transfer-table.xml
+  - include:
+      file: db/changelog/release-0.1.0.0/init-user_request-table.xml
