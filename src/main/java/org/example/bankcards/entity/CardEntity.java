@@ -1,17 +1,27 @@
 package org.example.bankcards.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.example.bankcards.enums.CardStatus;
+import org.example.bankcards.enums.CardStatusEnum;
 
 import java.math.BigInteger;
 import java.time.YearMonth;
 import java.util.Objects;
 
-/**
- * Сущность для таблицы card
- */
 @Entity
 @Setter
 @Getter
@@ -35,7 +45,7 @@ public class CardEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    CardStatus status;
+    CardStatusEnum status;
 
     @Column(name = "balance")
     BigInteger balance;

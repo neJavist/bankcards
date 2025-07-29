@@ -19,20 +19,9 @@
             <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1753337988238-1" author="nejavist">
-        <insert tableName="users" schemaName="bankcards">
-            <column name="id" valueNumeric="1"/>
-            <column name="name" value="user"/>
-            <column name="email" value="user@example.com"/>
-            <column name="password" value="pass"/>
-        </insert>
-        <insert tableName="users" schemaName="bankcards">
-            <column name="id" valueNumeric="2"/>
-            <column name="name" value="admin"/>
-            <column name="email" value="admin@example.com"/>
-            <column name="password" value="admin"/>
-        </insert>
     </changeSet>
 </databaseChangeLog>

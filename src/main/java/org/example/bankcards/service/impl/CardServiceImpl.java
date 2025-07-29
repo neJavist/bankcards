@@ -2,6 +2,8 @@ package org.example.bankcards.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bankcards.dto.CardDto;
+import org.example.bankcards.entity.CardEntity;
+import org.example.bankcards.entity.UserEntity;
 import org.example.bankcards.exception.custom_exceptions.CardNotFoundException;
 import org.example.bankcards.exception.custom_exceptions.UserNotFoundException;
 import org.example.bankcards.mapper.CardMapper;
@@ -11,16 +13,10 @@ import org.example.bankcards.service.CardService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Реализация сервиса для работы с банковскими картами.
- * Класс предоставляет методы для создания, удаления, обновления и получения информации о картах.
- *
- * @see CardMapper - маппер для преобразования между DTO и сущностями.
- * @see CardService
- */
 @Service
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
@@ -29,43 +25,24 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
 
-    /**
-     * Создаёт новую банковскую карту на основе переданных данных.
-     *
-     * @param cardDto данные карты в формате DTO {@link CardDto}
-     * @return сохранённая карта в виде DTO {@link CardDto}
-     * @throws RuntimeException если произошла ошибка при обработке {@link RuntimeException}
-     */
     @Transactional
     @Override
-    public CardDto createCard(CardDto cardDto) {
+    public CardDto createCard(CardDto cardDto, Long userId) {
         return Optional.of(cardDto)
                 .map(cardMapper::toEntity)
+                .map(entity -> setUserToCardEntity(userId, entity))
                 .map(cardRepository::save)
                 .map(cardMapper::toDto)
                 .orElseThrow(RuntimeException::new);
     }
 
-    /**
-     * Удаляет карту по её идентификатору.
-     *
-     * @param id идентификатор удаляемой карты {@link Long}
-     * @throws CardNotFoundException если карта не найдена {@link CardNotFoundException}
-     */
     @Transactional
     @Override
     public void deleteCard(Long id) {
         cardRepository.findById(id)
-                .ifPresentOrElse(cardRepository::delete, this::getCardNotFoundException);
+                .ifPresentOrElse(cardRepository::delete, CardNotFoundException::getCardNotFoundException);
     }
 
-    /**
-     * Обновляет информацию существующей карты.
-     *
-     * @param cardDto обновлённые данные карты в формате DTO {@link CardDto}
-     * @return обновлённая карта в виде DTO {@link CardDto}
-     * @throws CardNotFoundException если карта не найдена {@link CardNotFoundException}
-     */
     @Transactional
     @Override
     public CardDto updateCard(CardDto cardDto) {
@@ -73,29 +50,17 @@ public class CardServiceImpl implements CardService {
                 .map(entity -> cardMapper.mergeToEntity(cardDto, entity))
                 .map(cardRepository::save)
                 .map(cardMapper::toDto)
-                .orElseThrow(this::getCardNotFoundException);
+                .orElseThrow(CardNotFoundException::getCardNotFoundException);
     }
 
-    /**
-     * Получает информацию о карте по её идентификатору.
-     *
-     * @param id идентификатор карты {@link Long}
-     * @return информация о карте в виде DTO {@link CardDto}
-     * @throws CardNotFoundException если карта не найдена {@link CardNotFoundException}
-     */
     @Transactional(readOnly = true)
     @Override
     public CardDto getCard(Long id) {
         return cardRepository.findById(id)
                 .map(cardMapper::toDto)
-                .orElseThrow(this::getCardNotFoundException);
+                .orElseThrow(CardNotFoundException::getCardNotFoundException);
     }
 
-    /**
-     * Получает список всех карт.
-     *
-     * @return список карт в виде DTO {@link CardDto}
-     */
     @Transactional(readOnly = true)
     @Override
     public List<CardDto> getAllCards() {
@@ -104,38 +69,31 @@ public class CardServiceImpl implements CardService {
                 .toList();
     }
 
-    /**
-     * Получает список карт, принадлежащих пользователю с указанным идентификатором.
-     *
-     * @param id идентификатор пользователя {@link Long}
-     * @return список карт пользователя в виде DTO {@link CardDto}
-     * @throws UserNotFoundException если пользователь не найден {@link UserNotFoundException}
-     */
-    @Transactional(readOnly = true)
     @Override
-    public List<CardDto> getAllUserCards(Long id) {
-        return userRepository.findById(id)
-                .map(userEntity ->
-                        userEntity.getCards().stream()
-                                .map(cardMapper::toDto)
-                                .toList()
-                )
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    public List<CardDto> getAllUserCards(String username) {
+        return userRepository.findUserByName(username)
+                .map(this::getCardList)
+                .orElseThrow(UserNotFoundException::getUserNotFoundException);
     }
 
-    /**
-     * @param cardNumber
-     * @return
-     */
     @Override
-    public CardDto getCardByCardNumber(String cardNumber) {
-        return cardRepository.findByCardNumber(cardNumber)
+    public String getBalance(Long cardId, String username) {
+        return cardRepository.findByIdAndUserName(cardId, username)
+                .map(CardEntity::getBalance)
+                .map(BigInteger::toString)
+                .orElseThrow(CardNotFoundException::getCardNotFoundException);
+    }
+
+    private List<CardDto> getCardList(UserEntity userEntity) {
+        return userEntity.getCards().stream()
                 .map(cardMapper::toDto)
-                .orElseThrow(this::getCardNotFoundException);
+                .toList();
     }
 
-    private CardNotFoundException getCardNotFoundException() {
-        return new CardNotFoundException("Card not found");
+    private CardEntity setUserToCardEntity(Long userId, CardEntity entity) {
+        entity.setUser(userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::getUserNotFoundException));
+        return entity;
     }
 }
 

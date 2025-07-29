@@ -14,7 +14,7 @@
                 <constraints nullable="false" foreignKeyName="fk_card_user"
                              references="bankcards.users(id)"/>
             </column>
-            <column name="card_number" type="VARCHAR(20)">
+            <column name="card_number" type="VARCHAR(16)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="status" type="VARCHAR(50)">
@@ -27,33 +27,5 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1753338344873-1" author="nejavist">
-        <insert tableName="card" schemaName="bankcards">
-            <column name="id" valueNumeric="1"/>
-            <column name="user_id" valueNumeric="1"/>
-            <column name="card_number" value="1111-2222-3333-4444"/>
-            <column name="status" value="ACTIVE"/>
-            <column name="balance" valueNumeric="1000"/>
-            <column name="expiry_date" value="2026-05"/>
-        </insert>
-        <insert tableName="card" schemaName="bankcards">
-            <column name="id" valueNumeric="2"/>
-            <column name="user_id" valueNumeric="2"/>
-            <column name="card_number" value="5555-6666-7777-8888"/>
-            <column name="status" value="BLOCKED"/>
-            <column name="balance" valueNumeric="5000"/>
-            <column name="expiry_date" value="2028-11"/>
-        </insert>
-    </changeSet>
-    <changeSet id="1753469632685-1" author="nejavist">
-        <insert tableName="card" schemaName="bankcards">
-            <column name="id" valueNumeric="3"/>
-            <column name="user_id" valueNumeric="1"/>
-            <column name="card_number" value="2222-2222-2222-2222"/>
-            <column name="status" value="ACTIVE"/>
-            <column name="balance" valueNumeric="1000"/>
-            <column name="expiry_date" value="2027-05"/>
-        </insert>
     </changeSet>
 </databaseChangeLog>

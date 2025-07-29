@@ -1,10 +1,8 @@
 package org.example.bankcards.security.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bankcards.entity.UserEntity;
-import org.example.bankcards.mapper.UserMapper;
+import org.example.bankcards.exception.custom_exceptions.UserNotFoundException;
 import org.example.bankcards.repository.UserRepository;
-import org.example.bankcards.security.SecurityUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,9 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findUserByName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new SecurityUser(user);
+        return userRepository.findUserByName(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }
-
