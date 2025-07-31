@@ -25,13 +25,13 @@ public class SignUpRequestDto {
 
     @Size(min = 5, max = 50, message = "Имя пользователя должно содержать от 5 до 50 символов")
     @NotBlank(message = "Имя пользователя не может быть пустым")
-    @Schema(description = "Имя пользователя", example = "user")
+    @Schema(description = "Имя пользователя", example = "admin")
     String username;
 
     @Size(min = 5, max = 50, message = "Адрес электронной почты должен содержать от 5 до 50 символов")
     @NotBlank(message = "Адрес электронной почты не может быть пустым")
     @Email(message = "Email адрес должен быть в формате user@example.com")
-    @Schema(description = "Адрес электронной почты", example = "user@example.com")
+    @Schema(description = "Адрес электронной почты", example = "admin@example.com")
     String email;
 
     @NotBlank(message = "Пароль не может быть пустым")
