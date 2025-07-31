@@ -27,7 +27,7 @@ public class AuthController {
     @Operation(summary = "Регистрация пользователя", description = "Создаёт нового пользователя и возвращает токен.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь зарегистрирован",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = JwtAuthenticationResponseDto.class)) }),
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = JwtAuthenticationResponseDto.class))}),
             @ApiResponse(responseCode = "400", description = "Некорректные данные"),
             @ApiResponse(responseCode = "409", description = "Пользователь с таким email уже существует"),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера")
