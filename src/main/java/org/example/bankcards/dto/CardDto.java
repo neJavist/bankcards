@@ -21,6 +21,9 @@ import org.example.bankcards.enums.CardStatusEnum;
 import java.math.BigInteger;
 import java.time.YearMonth;
 
+/**
+ * DTO для представления информации о банковской карте.
+ */
 @Getter
 @Setter
 @Builder

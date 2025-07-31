@@ -41,7 +41,7 @@ public class CardBusinessServiceImpl implements CardBusinessService {
     @Transactional
     @Override
     public CardDto blockCard(Long id) {
-        CardDto cardDto = cardService.getCard(id);
+        CardDto cardDto = cardService.getCardById(id);
         cardDto.setStatus(CardStatusEnum.BLOCKED);
         return cardService.updateCard(cardDto);
     }
@@ -49,7 +49,7 @@ public class CardBusinessServiceImpl implements CardBusinessService {
     @Transactional
     @Override
     public CardDto activateCard(Long id) {
-        CardDto cardDto = cardService.getCard(id);
+        CardDto cardDto = cardService.getCardById(id);
         cardDto.setStatus(CardStatusEnum.ACTIVE);
         return cardService.updateCard(cardDto);
     }
@@ -61,7 +61,7 @@ public class CardBusinessServiceImpl implements CardBusinessService {
         String toCard = cardTransferDto.getCardNumberTo();
         String fromCard = cardTransferDto.getCardNumberFrom();
 
-        if (toCard.equals(fromCard)){
+        if (toCard.equals(fromCard)) {
             throw new RuntimeException("Карты не могут быть одинаковыми");
         }
 
@@ -134,7 +134,7 @@ public class CardBusinessServiceImpl implements CardBusinessService {
     public UserRequestDto userBlockRequest(Long id, String username) {
         return cardService.getAllUserCards(username).stream()
                 .filter(card ->
-                        card.getCardNumber().equals(cardService.getCard(id).getCardNumber()))
+                        card.getCardNumber().equals(cardService.getCardById(id).getCardNumber()))
                 .findAny()
                 .map(this::checkIsBlocked)
                 .map(card -> {

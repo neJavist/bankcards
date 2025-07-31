@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * DTO для передачи данных, необходимых для регистрации нового пользователя.
+ */
 @Getter
 @Setter
 @Builder

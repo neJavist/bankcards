@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST-контроллер для работы с аутентификацией и регистрацией.
+ */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
@@ -24,6 +27,14 @@ public class AuthController {
 
     private final AuthenticationService authenticationService;
 
+    /**
+     * Регистрация нового пользователя.
+     * <p>
+     * Метод создаёт нового пользователя на основе переданных данных и возвращает JWT токен.
+     *
+     * @param request данные пользователя для регистрации {@link SignUpRequestDto}
+     * @return объект с JWT токеном и сообщением об успешной регистрации {@link JwtAuthenticationResponseDto}
+     */
     @Operation(summary = "Регистрация пользователя", description = "Создаёт нового пользователя и возвращает токен.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь зарегистрирован",
@@ -39,12 +50,21 @@ public class AuthController {
         return authenticationService.signUp(request);
     }
 
+    /**
+     * Авторизация существующего пользователя.
+     * <p>
+     * Метод проверяет учетные данные пользователя и возвращает JWT токен.
+     *
+     * @param request данные пользователя для входа {@link SignInRequestDto}
+     * @return объект с JWT токеном и сообщением об успешной авторизации {@link JwtAuthenticationResponseDto}
+     */
     @Operation(summary = "Авторизация пользователя", description = "Авторизация пользователя и возвращает токен.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь авторизован",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = JwtAuthenticationResponseDto.class))}),
             @ApiResponse(responseCode = "400", description = "Некорректные данные"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
+            @ApiResponse(responseCode = "500", description = "Ошибка сервера")
     })
     @PostMapping("/sign-in")
     public JwtAuthenticationResponseDto signIn(

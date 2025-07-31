@@ -2,6 +2,7 @@ package org.example.bankcards.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bankcards.dto.CardDto;
+import org.example.bankcards.dto.CardFilterDto;
 import org.example.bankcards.entity.CardEntity;
 import org.example.bankcards.entity.UserEntity;
 import org.example.bankcards.exception.custom_exceptions.CardNotFoundException;
@@ -10,6 +11,8 @@ import org.example.bankcards.mapper.CardMapper;
 import org.example.bankcards.repository.CardRepository;
 import org.example.bankcards.repository.UserRepository;
 import org.example.bankcards.service.CardService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +58,7 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public CardDto getCard(Long id) {
+    public CardDto getCardById(Long id) {
         return cardRepository.findById(id)
                 .map(cardMapper::toDto)
                 .orElseThrow(CardNotFoundException::getCardNotFoundException);
@@ -63,10 +66,9 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CardDto> getAllCards() {
-        return cardRepository.findAll().stream()
-                .map(cardMapper::toDto)
-                .toList();
+    public Page<CardDto> getAllCardsPaginated(Pageable pageable) {
+        return cardRepository.findAll(pageable)
+                .map(cardMapper::toDto);
     }
 
     @Override
@@ -82,6 +84,32 @@ public class CardServiceImpl implements CardService {
                 .map(CardEntity::getBalance)
                 .map(BigInteger::toString)
                 .orElseThrow(CardNotFoundException::getCardNotFoundException);
+    }
+
+    @Override
+    public Page<CardDto> getAllUserCardsPaged(String username, Pageable pageable) {
+        UserEntity userEntity = userRepository.findUserByName(username)
+                .orElseThrow(UserNotFoundException::getUserNotFoundException);
+
+        return cardRepository.findAllByUser(userEntity, pageable)
+                .map(cardMapper::toDto);
+    }
+
+    @Override
+    public Page<CardDto> getUserCardsFiltredPaged(CardFilterDto cardFilterDto, String username, Pageable pageable) {
+        Long userId = userRepository.findUserByName(username)
+                .map(UserEntity::getId)
+                .orElseThrow(UserNotFoundException::getUserNotFoundException);
+
+        return cardRepository.findAllByCardNumberAndStatusAndBalanceAndExpiryDateAndUser(
+                        cardFilterDto.getCardNumber(),
+                        cardFilterDto.getStatus(),
+                        cardFilterDto.getBalance(),
+                        cardFilterDto.getExpiryDate(),
+                        userId,
+                        pageable
+                )
+                .map(cardMapper::toDto);
     }
 
     private List<CardDto> getCardList(UserEntity userEntity) {

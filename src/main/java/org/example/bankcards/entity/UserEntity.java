@@ -24,6 +24,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Сущность, представляющая пользователя в системе.
+ * <p>
+ * Реализует интерфейсы {@link UserDetails} и {@link GrantedAuthority} для интеграции с Spring Security.
+ */
 @Entity
 @Setter
 @Getter

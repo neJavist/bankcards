@@ -79,7 +79,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserDto setUserEncodePassword(UserDto user) {
+        System.out.println(user.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        System.out.println(user.getPassword());
         return user;
     }
 }

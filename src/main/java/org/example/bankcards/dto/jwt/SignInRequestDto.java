@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * DTO для аутентификации пользователя.
+ */
 @Getter
 @Setter
 @Builder

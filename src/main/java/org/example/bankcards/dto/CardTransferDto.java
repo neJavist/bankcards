@@ -19,6 +19,9 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+/**
+ * DTO для передачи данных для перевода средств между картами.
+ */
 @Getter
 @Setter
 @Builder

@@ -19,6 +19,9 @@ import org.example.bankcards.enums.CardStatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * Сущность, представляющая запрос пользователя на изменение статуса карты.
+ */
 @Entity
 @Setter
 @Getter

@@ -22,6 +22,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+/**
+ * Класс {@code SecurityConfig} реализует конфигурацию безопасности приложения.
+ * Настраивает цепочку фильтров безопасности, аутентификацию, авторизацию, CORS и шифрование паролей.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,6 +34,16 @@ public class SecurityConfig implements WebMvcConfigurer {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Метод настройки цепочки фильтров безопасности.
+     * <p>
+     * Определяет, какие запросы требуют аутентификации, какая политика сессий применяется
+     * и какие фильтры добавляются к цепочке обработки запроса.
+     *
+     * @param http объект HttpSecurity, с помощью которого настраиваются параметры безопасности
+     * @return настроенная цепочка безопасности (SecurityFilterChain)
+     * @throws Exception если произошла ошибка при настройке
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -46,11 +60,26 @@ public class SecurityConfig implements WebMvcConfigurer {
         return http.build();
     }
 
+    /**
+     * Метод, создающий бин кодировщика паролей.
+     * <p>
+     * Используется BCryptPasswordEncoder для хэширования паролей.
+     *
+     * @return объект PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Метод, создающий бин провайдера аутентификации.
+     * <p>
+     * Используется DaoAuthenticationProvider, который использует UserDetailsService
+     * и PasswordEncoder для проверки учетных данных.
+     *
+     * @return объект AuthenticationProvider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -59,12 +88,28 @@ public class SecurityConfig implements WebMvcConfigurer {
         return authProvider;
     }
 
+    /**
+     * Метод, создающий бин менеджера аутентификации.
+     * <p>
+     * Используется для выполнения процесса аутентификации в Spring Security.
+     *
+     * @param config конфигурация аутентификации
+     * @return объект AuthenticationManager
+     * @throws Exception если произошла ошибка при создании менеджера
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Метод настройки CORS (Cross-Origin Resource Sharing).
+     * <p>
+     * Разрешает запросы только с определенного домена и указывает разрешенные методы и заголовки.
+     *
+     * @param registry объект CorsRegistry, с помощью которого настраиваются параметры CORS
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -75,6 +120,3 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 }
-
-
-

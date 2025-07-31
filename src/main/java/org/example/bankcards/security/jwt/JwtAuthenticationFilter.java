@@ -18,14 +18,50 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Фильтр аутентификации по JWT-токену.
+ * <p>
+ * Этот фильтр проверяет каждый HTTP-запрос на наличие валидного JWT-токена в заголовке "Authorization".
+ * Если токен валиден, создается объект аутентификации и устанавливается в контексте безопасности Spring.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    /**
+     * Префикс, указывающий, что токен является Bearer-токеном.
+     * Пример: "Bearer abcdef123456"
+     */
     public static final String BEARER_PREFIX = "Bearer ";
+
+    /**
+     * Имя заголовка HTTP, в котором передаётся JWT-токен.
+     * Обычно: "Authorization"
+     */
     public static final String HEADER_NAME = "Authorization";
+
+    /**
+     * Сервис для работы с JWT-токенами.
+     * Отвечает за извлечение данных из токена и его валидацию.
+     */
     private final JwtService jwtService;
+
+    /**
+     * Сервис для загрузки информации о пользователе по имени.
+     * Используется Spring Security для получения деталей пользователя.
+     */
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Метод, вызываемый при обработке каждого HTTP-запроса.
+     * Проверяет наличие и валидность JWT-токена в заголовке запроса.
+     *
+     * @param request  объект HttpServletRequest, содержащий входящий HTTP-запрос
+     * @param response объект HttpServletResponse, содержащий ответ сервера
+     * @param filterChain цепочка фильтров Spring Security
+     * @throws ServletException если произошла ошибка в процессе обработки запроса
+     * @throws IOException      если произошла ошибка ввода-вывода
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -43,8 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         var username = jwtService.extractUserName(jwt);
 
         if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService
-                    .loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();

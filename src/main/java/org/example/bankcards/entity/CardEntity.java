@@ -22,6 +22,9 @@ import java.math.BigInteger;
 import java.time.YearMonth;
 import java.util.Objects;
 
+/**
+ * Сущность, представляющая банковскую карту в системе.
+ */
 @Entity
 @Setter
 @Getter

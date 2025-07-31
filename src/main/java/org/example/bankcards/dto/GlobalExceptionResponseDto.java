@@ -12,6 +12,9 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO для представления глобальной ошибки.
+ */
 @Getter
 @Setter
 @Builder

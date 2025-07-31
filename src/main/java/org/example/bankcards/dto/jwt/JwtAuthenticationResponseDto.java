@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * DTO для передачи JWT токена в ответе.
+ */
 @Getter
 @Setter
 @Builder
@@ -19,6 +22,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Ответ с JWT токеном после успешной аутентификации")
 public class JwtAuthenticationResponseDto {
+
     @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
     String token;
 }

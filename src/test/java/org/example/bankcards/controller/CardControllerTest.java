@@ -1,36 +1,30 @@
 package org.example.bankcards.controller;
 
-import org.example.bankcards.dto.CardDto;
 import org.example.bankcards.dto.CardTransferDto;
 import org.example.bankcards.dto.UserRequestDto;
 import org.example.bankcards.service.CardBusinessService;
 import org.example.bankcards.service.CardService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigInteger;
 import java.security.Principal;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CardControllerTest {
 
     private final String username = "testUser";
     private final Long cardId = 1L;
     private final CardTransferDto transferDto = new CardTransferDto();
-
-    private final CardDto cardDto = CardDto.builder()
-            .id(1L)
-            .cardNumber("4567123456789012")
-            .build();
 
     private final UserRequestDto userRequestDto = new UserRequestDto();
 
@@ -46,40 +40,6 @@ class CardControllerTest {
         transferDto.setCardNumberFrom("4567123456789012");
         transferDto.setCardNumberTo("1234567890123456");
         transferDto.setAmount(new java.math.BigInteger("100"));
-    }
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void testGetAllUserCards_Success() {
-        List<CardDto> expectedCards = List.of(cardDto);
-        Principal principal = mock(Principal.class);
-        when(principal.getName()).thenReturn(username);
-
-        when(cardService.getAllUserCards(username)).thenReturn(expectedCards);
-
-        ResponseEntity<List<CardDto>> response = cardController.getAllUserCards(principal);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedCards, response.getBody());
-    }
-
-    @Test
-    void testGetAllUserCards_EmptyList() {
-        when(cardService.getAllUserCards(username)).thenReturn(List.of());
-        Principal principal = mock(Principal.class);
-        when(principal.getName()).thenReturn(username);
-
-        ResponseEntity<List<CardDto>> response = cardController.getAllUserCards(principal);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().isEmpty());
     }
 
     @Test

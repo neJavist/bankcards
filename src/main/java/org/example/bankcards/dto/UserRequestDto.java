@@ -16,6 +16,9 @@ import org.example.bankcards.enums.CardStatusEnum;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO для запроса пользователя на блокировку карты.
+ */
 @Getter
 @Setter
 @Builder

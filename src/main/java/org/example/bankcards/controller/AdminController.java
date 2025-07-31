@@ -13,18 +13,17 @@ import org.example.bankcards.dto.UserDto;
 import org.example.bankcards.service.CardBusinessService;
 import org.example.bankcards.service.CardService;
 import org.example.bankcards.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST-контроллер административного API.
+ * Обрабатывает запросы, связанные с управлением пользователями и картами.
+ */
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -34,6 +33,13 @@ public class AdminController {
     private final CardService cardService;
     private final CardBusinessService cardBusinessService;
 
+    /**
+     * Создаёт новую карту для указанного пользователя.
+     *
+     * @param cardDto данные новой карты {@link CardDto}
+     * @param userId  ID пользователя, для которого создаётся карта {@link Long}
+     * @return ResponseEntity<CardDto> с информацией о созданной карте {@link CardDto}
+     */
     @Operation(summary = "Создать карту", description = "Создаёт новую карту для указанного пользователя.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Карта успешно создана",
@@ -49,6 +55,12 @@ public class AdminController {
         return ResponseEntity.ok(cardService.createCard(cardDto, userId));
     }
 
+    /**
+     * Заблокирует карту по её ID.
+     *
+     * @param id ID карты, которую нужно заблокировать {@link Long}
+     * @return ResponseEntity<CardDto> с обновлённой информацией о карте {@link CardDto}
+     */
     @Operation(summary = "Заблокировать карту", description = "Заблокирует карту по её ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Карта заблокирована",
@@ -62,6 +74,12 @@ public class AdminController {
         return ResponseEntity.ok(cardBusinessService.blockCard(id));
     }
 
+    /**
+     * Активирует карту по её ID.
+     *
+     * @param id ID карты, которую нужно активировать {@link Long}
+     * @return ResponseEntity<CardDto> с обновлённой информацией о карте {@link CardDto}
+     */
     @Operation(summary = "Активировать карту", description = "Активирует карту по её ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Карта активирована",
@@ -75,6 +93,12 @@ public class AdminController {
         return ResponseEntity.ok(cardBusinessService.activateCard(id));
     }
 
+    /**
+     * Удаляет карту по её ID.
+     *
+     * @param id ID карты, которую нужно удалить {@link Long}
+     * @return ResponseEntity<Long> с ID удалённой карты {@link Long}
+     */
     @Operation(summary = "Удалить карту", description = "Удаляет карту по её ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Карта удалена", content = {
@@ -89,17 +113,35 @@ public class AdminController {
         return ResponseEntity.ok(id);
     }
 
-    @Operation(summary = "Получить все карты", description = "Возвращает список всех карт.")
+    /**
+     * Возвращает список всех карт, разбитый на страницы.
+     *
+     * @param page номер страницы (начиная с 0) {@link Integer}
+     * @param size количество записей на странице {@link Integer}
+     * @return ResponseEntity<Page<CardDto>> со списком карт {@link Page<CardDto>}
+     */
+    @Operation(summary = "Получить все карты", description = "Возвращает список всех карт, разбитый на страницы.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список карт",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера")
     })
     @GetMapping("/cards")
-    public ResponseEntity<List<CardDto>> getAllCards() {
-        return ResponseEntity.ok(cardService.getAllCards());
+    public ResponseEntity<Page<CardDto>> getAllCardsPaginated(
+            @Parameter(description = "Номер страницы", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Количество записей на странице", example = "10")
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(cardService.getAllCardsPaginated(PageRequest.of(page, size)));
     }
 
+    /**
+     * Создаёт нового пользователя.
+     *
+     * @param userDto данные нового пользователя {@link UserDto}
+     * @return ResponseEntity<UserDto> с информацией о созданном пользователе {@link UserDto}
+     */
     @Operation(summary = "Создать пользователя", description = "Создаёт нового пользователя.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь создан",
@@ -112,6 +154,13 @@ public class AdminController {
         return ResponseEntity.ok(userService.createUser(userDto));
     }
 
+    /**
+     * Обновляет информацию о пользователе.
+     *
+     * @param userDto новые данные пользователя {@link UserDto}
+     * @param id      ID пользователя, которого нужно обновить {@link Long}
+     * @return ResponseEntity<UserDto> с обновлённой информацией о пользователе {@link UserDto}
+     */
     @Operation(summary = "Обновить пользователя", description = "Обновляет информацию о пользователе.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь обновлён",
@@ -126,6 +175,12 @@ public class AdminController {
         return ResponseEntity.ok(userService.updateUser(userDto, id));
     }
 
+    /**
+     * Удаляет пользователя по его ID.
+     *
+     * @param id ID пользователя, которого нужно удалить {@link Long}
+     * @return ResponseEntity<Void> без тела ответа {@link Void}
+     */
     @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по его ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Пользователь удалён"),
@@ -139,13 +194,18 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Возвращает пользователя по его ID.
+     *
+     * @param id ID пользователя, которого нужно найти {@link Long}
+     * @return ResponseEntity<UserDto> с информацией о пользователе {@link UserDto}
+     */
     @Operation(summary = "Получить пользователя", description = "Возвращает пользователя по его ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь найден",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))}),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера")
-
     })
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> getUserById(
@@ -153,6 +213,11 @@ public class AdminController {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
+    /**
+     * Возвращает список всех пользователей.
+     *
+     * @return ResponseEntity<List < UserDto>> со списком всех пользователей {@link List<UserDto>}
+     */
     @Operation(summary = "Получить всех пользователей", description = "Возвращает список всех пользователей.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список пользователей",

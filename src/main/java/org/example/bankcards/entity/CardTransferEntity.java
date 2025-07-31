@@ -20,6 +20,9 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Сущность, представляющая перевод денежных средств между картами.
+ */
 @Entity
 @Setter
 @Getter

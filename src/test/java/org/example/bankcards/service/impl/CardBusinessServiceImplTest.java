@@ -17,11 +17,11 @@ import org.example.bankcards.repository.CardTransferRepository;
 import org.example.bankcards.repository.UserRepository;
 import org.example.bankcards.repository.UserRequestRepository;
 import org.example.bankcards.service.CardService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -31,6 +31,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CardBusinessServiceImplTest {
 
     private final String username = "testUser";
@@ -87,15 +88,10 @@ class CardBusinessServiceImplTest {
         transferDto.setAmount(amount);
     }
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void testBlockCard_Success() {
         CardDto card = CardDto.builder().id(1L).status(CardStatusEnum.ACTIVE).build();
-        when(cardService.getCard(1L)).thenReturn(card);
+        when(cardService.getCardById(1L)).thenReturn(card);
         when(cardService.updateCard(card)).thenReturn(card);
 
         CardDto result = cardBusinessService.blockCard(1L);
@@ -107,7 +103,7 @@ class CardBusinessServiceImplTest {
     @Test
     void testActivateCard_Success() {
         CardDto card = CardDto.builder().id(1L).status(CardStatusEnum.BLOCKED).build();
-        when(cardService.getCard(1L)).thenReturn(card);
+        when(cardService.getCardById(1L)).thenReturn(card);
         when(cardService.updateCard(card)).thenReturn(card);
 
         CardDto result = cardBusinessService.activateCard(1L);
@@ -268,7 +264,7 @@ class CardBusinessServiceImplTest {
                 .requestTime(LocalDateTime.now())
                 .build();
 
-        when(cardService.getCard(cardId)).thenReturn(card);
+        when(cardService.getCardById(cardId)).thenReturn(card);
         when(cardService.getAllUserCards(username)).thenReturn(userCards);
         when(userRepository.findUserByName(username)).thenReturn(Optional.of(userEntity));
         when(cardService.updateCard(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -293,7 +289,7 @@ class CardBusinessServiceImplTest {
                 .status(CardStatusEnum.BLOCKED)
                 .build();
 
-        when(cardService.getCard(1L)).thenReturn(card);
+        when(cardService.getCardById(1L)).thenReturn(card);
         when(cardService.getAllUserCards(username)).thenReturn(List.of(card));
 
         assertThrows(CardIsNotActiveException.class, () -> cardBusinessService.userBlockRequest(1L, username));
@@ -301,8 +297,6 @@ class CardBusinessServiceImplTest {
 
     @Test
     void testUserBlockRequest_CardNotFound_Exception() {
-        when(cardService.getCard(1L)).thenThrow(CardNotFoundException.class);
-
         assertThrows(CardNotFoundException.class, () -> cardBusinessService.userBlockRequest(1L, username));
     }
 }
