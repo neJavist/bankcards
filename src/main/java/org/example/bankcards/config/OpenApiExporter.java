@@ -14,9 +14,7 @@ import java.io.FileWriter;
 public class OpenApiExporter implements ApplicationRunner {
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        Thread.sleep(5000);
-
+    public void run(ApplicationArguments args) {
         String url = "http://localhost:8080/v3/api-docs";
         RestTemplate restTemplate = new RestTemplate();
 

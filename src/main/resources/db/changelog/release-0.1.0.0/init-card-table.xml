@@ -6,6 +6,12 @@
         http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
     <changeSet id="1753342035184-1" author="nejavist">
+        <preConditions onFail="MARK_RAN" onError="HALT">
+            <not>
+                <tableExists schemaName="bankcards" tableName="card"/>
+            </not>
+            <dbms type="postgresql"/>
+        </preConditions>
         <createTable tableName="card" schemaName="bankcards">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
